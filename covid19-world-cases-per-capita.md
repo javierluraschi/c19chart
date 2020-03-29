@@ -1,4 +1,4 @@
-Coronovirus Cases by Region per Capita
+Coronavirus Cases by Region per Capita
 ================
 
 ``` r
@@ -115,7 +115,7 @@ highlight_since_start %>%
     scale_y_continuous(labels = scales::percent_format(accuracy = 0.0001), trans='log2') +
     geom_dl(aes(label = country), method = list(dl.trans(x = x + 0.2), "last.points", cex = 0.7)) +
     xlab("Number of days since 100th case") + ylab("") +
-    labs(title = "Coronovirus Cases by Region per Capita",
+    labs(title = "Coronavirus Cases by Region per Capita",
          subtitle = "Cumulative number of confirmed cases, divided by population, since 100th case",
          caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: March 28, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
     theme_bw() + 

@@ -1,5 +1,5 @@
 ---
-title: "Coronovirus Deaths by Region per Capita"
+title: "Coronavirus Deaths by Region per Capita"
 output:
   github_document:
     fig_width: 9
@@ -106,7 +106,7 @@ highlight_since_start %>%
     scale_y_continuous(labels = scales::percent_format(accuracy = 0.00001), trans='log2') +
     geom_dl(aes(label = country), method = list(dl.trans(x = x + 0.2), "last.points", cex = 0.7)) +
     xlab("Number of days since 10th death") + ylab("") +
-    labs(title = "Coronovirus Deaths by Region per Capita",
+    labs(title = "Coronavirus Deaths by Region per Capita",
          subtitle = "Cumulative number of deaths, divided by population, since 10th death",
          caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: March 28, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
     theme_bw() + 
