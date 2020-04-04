@@ -93,20 +93,20 @@ covid_since_start <- since_start %>%
   left_join(population, by = "country") %>%
   mutate(total_percent = total / population)
 
-highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Thailand", "Germany", "France", "Monaco"))
+highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Thailand", "Germany", "France", "Monaco", "Sweden"))
 
 highlight_since_start %>%
   ggplot(aes(x = since_start, y = total_percent, colour = country)) +
     geom_line(aes(group = country), data = covid_since_start, alpha = 0.3, colour = "grey") +
     geom_line(alpha = 0.8) +
     scale_colour_discrete(guide = 'none') +
-    scale_x_continuous(limits = c(0, 70)) +
+    scale_x_continuous(limits = c(0,75)) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 0.0001), trans='log2') +
-    geom_dl(aes(label = country), method = list(dl.trans(x = x + 0.2), "last.points", cex = 0.7)) +
+    geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7)) +
     xlab("Number of days since 100th case") + ylab("") +
     labs(title = "Coronavirus Cases by Region per Capita",
          subtitle = "Cumulative number of confirmed cases, divided by population, since 100th case",
-         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: March 28, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
+         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: April 3, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
     theme_bw() + 
     theme(plot.background = element_rect(fill = "#fff1e6"),
           panel.background = element_rect(fill = "#fff1e6",
