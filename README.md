@@ -110,7 +110,7 @@ covid_since_start <- since_start %>%
   left_join(population, by = "country") %>%
   mutate(total_percent = total / population)
 
-highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Thailand", "Germany", "France", "Monaco", "Sweden", "Philippines"))
+highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Germany", "France", "Monaco", "Sweden", "Philippines", "Belgium", "Brazil"))
 
 population_us <- population %>% filter(country == "US") %>% pull(population)
 total_us <- coronavirus %>% 
@@ -126,10 +126,10 @@ highlight_since_start %>%
     scale_x_continuous(limits = c(0, 75)) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 0.00001), trans='log2') +
     geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7)) +
-    xlab("Number of days since 10th death") + ylab("") +
+    xlab("Number of days since tenth death") + ylab("") +
     labs(title = "Coronavirus Deaths by Region per Capita",
-         subtitle = "Cumulative number of deaths as percent of population since 10th death",
-         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: March 28, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
+         subtitle = "Cumulative number of deaths as percent of population since tenth death",
+         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: April 3, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
     theme_bw() + 
     theme(plot.background = element_rect(fill = "#fff1e6"),
           panel.background = element_rect(fill = "#fff1e6",
@@ -142,13 +142,13 @@ highlight_since_start %>%
           panel.border = element_blank()) +
     # https://www.cdc.gov/flu/about/burden/2018-2019.html
     geom_hline(aes(yintercept = 34200 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=71, y = 34200 / population_us + 0.00006, label = "influenza (34K/year US)", size = 3.5, colour="grey70") +
+    annotate("text", x=71.3, y = 34200 / population_us + 0.00006, label = "influenza (34K/year US)", size = 3.5, colour="grey70") +
     # https://www.cdc.gov/nchs/fastats/leading-causes-of-death.htm
     geom_hline(aes(yintercept = 160201 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=68, y = 160201 / population_us + 0.0003, label = "chronic respiratory (160K/year US)", size = 3.5, colour="grey70") +
+    annotate("text", x=63.9, y = 160201 / population_us + 0.0003, label = "chronic lower respiratory diseases (160K/year US)", size = 3.5, colour="grey70") +
     # https://www.cdc.gov/heartdisease/facts.htm
     geom_hline(aes(yintercept = 647000 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=69.5, y = 647000 / population_us + 0.001, label = "heart disease (647K/year US)", size = 3.5, colour="grey70") +
+    annotate("text", x=69.7, y = 647000 / population_us + 0.001, label = "heart disease (647K/year US)", size = 3.5, colour="grey70") +
     ggsave("covid19-deaths-per-capita.png", device = "png", width = 10, height = 5)
 ```
 
