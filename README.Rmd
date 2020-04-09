@@ -100,7 +100,9 @@ covid_since_start <- since_start %>%
   left_join(population, by = "country") %>%
   mutate(total_percent = total / population)
 
-highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Germany", "France", "Monaco", "Sweden", "Philippines", "Belgium", "Brazil"))
+countries_highlight <- c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Germany", "France", "Monaco", "Sweden", "Philippines", "Belgium", "Brazil")
+
+highlight_since_start <- filter(covid_since_start, country %in% countries_highlight)
 
 population_us <- population %>% filter(country == "US") %>% pull(population)
 total_us <- coronavirus %>% 
@@ -138,12 +140,55 @@ highlight_since_start %>%
           panel.grid.minor = element_line(color="grey90"),
           panel.border = element_blank()) +
     geom_line(data = deaths_influenza, alpha = 0.3, colour="grey70", linetype="dashed") +
-    annotate("text", x=71.3, y = max(deaths_influenza$total_percent) + 0.00006, label = "influenza (93/day US)", size = 3.5, colour="grey70") +
+    annotate("text", x=70.2, y = max(deaths_influenza$total_percent) + 0.000009, label = "influenza (93/day US)", size = 3, colour="grey70") +
     geom_line(data = deaths_clrd, alpha = 0.3, colour="grey70", linetype="dashed") +
-    annotate("text", x=63.9, y = max(deaths_clrd$total_percent) + 0.0003, label = "chronic lower respiratory diseases (438/day US)", size = 3.5, colour="grey70") +
+    annotate("text", x=63.9, y = max(deaths_clrd$total_percent) + 0.00005, label = "chronic lower respiratory diseases (438/day US)", size = 3, colour="grey70") +
     geom_line(data = deaths_heart, alpha = 0.3, colour="grey70", linetype="dashed") +
-    annotate("text", x=69.7, y = max(deaths_heart$total_percent) + 0.001, label = "heart disease (1772/day US)", size = 3.5, colour="grey70") +
+    annotate("text", x=68.5, y = max(deaths_heart$total_percent) + 0.0002, label = "heart disease (1772/day US)", size = 3, colour="grey70") +
     ggsave("covid19-deaths-per-capita.png", device = "png", width = 10, height = 5)
 ```
 
+```{r}
+covid_since_start %>%
+  filter(since_start <= 14) %>%
+  group_by(country) %>%
+  summarise(total = sum(cases), days = max(since_start)) %>%
+  left_join(population, by = "country") %>%
+  ggplot(aes(x=population, y=total)) +
+  scale_x_continuous(trans='log2') +
+  scale_y_continuous(trans='log2') +
+  geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7, hjust=-0.2)) +
+  geom_smooth(method=lm) +
+  labs(title = "Countries deaths vs population after 10th death on 14th day") +
+  ggsave("covid19-deaths-population.png", device = "png", width = 12, height = 6)
+```
 
+```{r echo=FALSE, eval=FALSE}
+covid_since_start %>%
+  filter(since_start <= 36) %>%
+  filter(country %in% c("Spain", "Netherlands", "Italy", "UK", "France", "China", "Switzerland", "Iran", "US", "South Korea", "Japan")) %>%
+  group_by(country) %>%
+  summarise(total = sum(cases), days = max(since_start)) %>%
+  left_join(population, by = "country") %>%
+  ggplot(aes(x=population, y=total)) +
+  geom_point() +
+  geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7, hjust=-0.2)) +
+  geom_smooth(method=lm) +
+  labs(title = "Countries subset deaths vs population after 10th death on 36th day") +
+  ggsave("covid19-deaths-population-subset.png", device = "png", width = 12, height = 6)
+```
+
+```{r echo=FALSE, eval=FALSE}
+covid_since_start %>%
+  filter(since_start <= 36) %>%
+  filter(country %in% c("Spain", "Netherlands", "Italy", "UK", "France", "Switzerland", "Iran", "US", "South Korea", "Japan")) %>%
+  group_by(country) %>%
+  summarise(total = sum(cases), days = max(since_start)) %>%
+  left_join(population, by = "country") %>%
+  ggplot(aes(x=population, y=total)) +
+  geom_point() +
+  geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7, hjust=-0.2)) +
+  geom_smooth(method=lm) +
+  labs(title = "Countries subset deaths vs population after 10th death on 36th day") +
+  ggsave("covid19-deaths-population-nochina.png", device = "png", width = 12, height = 6)
+```

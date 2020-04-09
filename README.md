@@ -89,6 +89,7 @@ population <- population %>%
       Country == "Myanmar"  ~ "Burma",
       Country == "Gambia, The" ~ "Gambia",
       Country == "Syrian Arab Republic" ~ "Syria",
+      Country == "Congo, Dem. Rep." ~ "Congo (Brazzaville)",
       TRUE ~ Country
     )
   )
@@ -110,13 +111,22 @@ covid_since_start <- since_start %>%
   left_join(population, by = "country") %>%
   mutate(total_percent = total / population)
 
-highlight_since_start <- filter(covid_since_start, country %in% c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Germany", "France", "Monaco", "Sweden", "Philippines", "Belgium", "Brazil"))
+countries_highlight <- c("San Marino", "Andorra", "Iceland", "India", "Luxembourg", "US", "Spain", "Italy", "Japan", "China", "Iran", "UK", "South Korea", "Singapore", "Diamond Princess", "Vietnam", "Taiwan*", "Germany", "France", "Monaco", "Sweden", "Philippines", "Belgium", "Brazil")
+
+highlight_since_start <- filter(covid_since_start, country %in% countries_highlight)
 
 population_us <- population %>% filter(country == "US") %>% pull(population)
 total_us <- coronavirus %>% 
   filter(country == "US") %>%
   summarise(total = sum(cases)) %>%
   pull(total)
+
+# https://www.cdc.gov/flu/about/burden/2018-2019.html
+deaths_influenza <- data.frame(since_start = 1:80, total_percent = 1:80 * (34200 / 365) / population_us)
+# https://www.cdc.gov/nchs/fastats/leading-causes-of-death.htm
+deaths_clrd <- data.frame(since_start = 1:80, total_percent = 1:80 * (160201 / 365) / population_us)
+# https://www.cdc.gov/heartdisease/facts.htm
+deaths_heart <- data.frame( since_start = 1:80, total_percent = 1:80 * (647000 / 365) / population_us)
 
 highlight_since_start %>%
   ggplot(aes(x = since_start, y = total_percent, colour = country)) +
@@ -140,16 +150,53 @@ highlight_since_start %>%
           panel.grid.major = element_line(color="grey90"),
           panel.grid.minor = element_line(color="grey90"),
           panel.border = element_blank()) +
-    # https://www.cdc.gov/flu/about/burden/2018-2019.html
-    geom_hline(aes(yintercept = 34200 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=71.3, y = 34200 / population_us + 0.00006, label = "influenza (34K/year US)", size = 3.5, colour="grey70") +
-    # https://www.cdc.gov/nchs/fastats/leading-causes-of-death.htm
-    geom_hline(aes(yintercept = 160201 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=63.9, y = 160201 / population_us + 0.0003, label = "chronic lower respiratory diseases (160K/year US)", size = 3.5, colour="grey70") +
-    # https://www.cdc.gov/heartdisease/facts.htm
-    geom_hline(aes(yintercept = 647000 / population_us), colour="grey80", linetype="dashed") +
-    annotate("text", x=69.7, y = 647000 / population_us + 0.001, label = "heart disease (647K/year US)", size = 3.5, colour="grey70") +
+    geom_line(data = deaths_influenza, alpha = 0.3, colour="grey70", linetype="dashed") +
+    annotate("text", x=70.2, y = max(deaths_influenza$total_percent) + 0.000009, label = "influenza (93/day US)", size = 3, colour="grey70") +
+    geom_line(data = deaths_clrd, alpha = 0.3, colour="grey70", linetype="dashed") +
+    annotate("text", x=63.9, y = max(deaths_clrd$total_percent) + 0.00005, label = "chronic lower respiratory diseases (438/day US)", size = 3, colour="grey70") +
+    geom_line(data = deaths_heart, alpha = 0.3, colour="grey70", linetype="dashed") +
+    annotate("text", x=68.5, y = max(deaths_heart$total_percent) + 0.0002, label = "heart disease (1772/day US)", size = 3, colour="grey70") +
     ggsave("covid19-deaths-per-capita.png", device = "png", width = 10, height = 5)
 ```
 
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 3 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+    
+    ## Warning: Removed 5 row(s) containing missing values (geom_path).
+
 ![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
+covid_since_start %>%
+  filter(since_start <= 14) %>%
+  group_by(country) %>%
+  summarise(total = sum(cases), days = max(since_start)) %>%
+  left_join(population, by = "country") %>%
+  ggplot(aes(x=population, y=total)) +
+  scale_x_continuous(trans='log2') +
+  scale_y_continuous(trans='log2') +
+  geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7, hjust=-0.2)) +
+  geom_smooth(method=lm) +
+  labs(title = "Countries deaths vs population after 10th death on 14th day") +
+  ggsave("covid19-deaths-population.png", device = "png", width = 12, height = 6)
+```
+
+    ## `geom_smooth()` using formula 'y ~ x'
+    ## `geom_smooth()` using formula 'y ~ x'
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
