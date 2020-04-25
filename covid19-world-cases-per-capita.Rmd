@@ -72,6 +72,11 @@ population <- population %>%
       Country == "Macedonia, FYR" ~ "North Macedonia",
       Country == "Slovak Republic" ~ "Slovakia",
       Country == "Venezuela, RB" ~ "Venezuela",
+      Country == "Bahamas, The" ~ "Bahamas",
+      Country == "Myanmar"  ~ "Burma",
+      Country == "Gambia, The" ~ "Gambia",
+      Country == "Syrian Arab Republic" ~ "Syria",
+      Country == "Congo, Dem. Rep." ~ "Congo (Brazzaville)",
       TRUE ~ Country
     )
   )
@@ -79,8 +84,8 @@ population <- population %>%
 population <- transmute(population, country = country, population = Year_2016)
 
 population <- rbind(population, data.frame(
-  country = c("Taiwan*", "Diamond Princess"),
-  population = c(23780000, 3700)
+  country = c("Taiwan*", "Diamond Princess", "MS Zaandam"),
+  population = c(23780000, 3700, 136 + 97)
 ))
 
 countries <- unique(since_start$country)
@@ -100,13 +105,13 @@ highlight_since_start %>%
     geom_line(aes(group = country), data = covid_since_start, alpha = 0.3, colour = "grey") +
     geom_line(alpha = 0.8) +
     scale_colour_discrete(guide = 'none') +
-    scale_x_continuous(limits = c(0,75)) +
+    scale_x_continuous(limits = c(0,95)) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 0.0001), trans='log2') +
     geom_dl(aes(label = country), method = list("last.bumpup", cex = 0.7)) +
     xlab("Number of days since 100th case") + ylab("") +
     labs(title = "Coronavirus Cases by Region per Capita",
          subtitle = "Cumulative number of confirmed cases, divided by population, since 100th case",
-         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: April 3, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
+         caption = element_text("Source: Johns Hopkins University Center for Systems Science and Engineering. Data Updated: April 25, 2020\nFigure: github.com/javierluraschi/c19chart", color="grey")) +
     theme_bw() + 
     theme(plot.background = element_rect(fill = "#fff1e6"),
           panel.background = element_rect(fill = "#fff1e6",
